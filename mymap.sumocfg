@@ -1,0 +1,7 @@
+<configuration>
+    <input>
+        <net-file value="mymap.net.xml"/>
+        <route-files value="mymap.rou.xml"/>
+        <additional-files value="mymap.poly.xml"/>
+    </input>
+</configuration>
