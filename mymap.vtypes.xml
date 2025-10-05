@@ -1,0 +1,25 @@
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <!-- Auto-rickshaw: Small, slow, highly maneuverable -->
+    <vType id="auto_rickshaw" accel="1.5" decel="4.0" sigma="0.8" length="3.0" minGap="1.0" 
+           maxSpeed="13.89" color="1,1,0" vClass="taxi" guiShape="delivery" 
+           speedFactor="0.9" speedDev="0.2" lcStrategic="1.5" lcCooperative="0.5"
+           lcSpeedGain="2.0" lcKeepRight="0.3"/>
+    
+    <!-- Motorcycle/Scooter: Fast, agile, weaves through traffic -->
+    <vType id="motorcycle" accel="3.5" decel="6.0" sigma="0.6" length="2.0" minGap="0.5" 
+           maxSpeed="27.78" color="1,0,0" vClass="motorcycle" guiShape="motorcycle"
+           speedFactor="1.2" speedDev="0.3" lcStrategic="2.0" lcCooperative="0.3"
+           lcSpeedGain="3.0" lcKeepRight="0.1"/>
+    
+    <!-- Car: Medium speed, standard behavior -->
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5.0" minGap="2.5" 
+           maxSpeed="33.33" color="0.9,0.9,0.9" vClass="passenger" guiShape="passenger"
+           speedFactor="1.0" speedDev="0.15" lcStrategic="1.0" lcCooperative="1.0"
+           lcSpeedGain="1.0" lcKeepRight="0.5"/>
+    
+    <!-- Bus/Truck: Large, slow, less maneuverable - FIXED routing -->
+    <vType id="bus_truck" accel="1.2" decel="3.5" sigma="0.3" length="12.0" minGap="3.5" 
+           maxSpeed="22.22" color="0,0,1" vClass="bus" guiShape="bus"
+           speedFactor="0.85" speedDev="0.1" lcStrategic="0.5" lcCooperative="1.5"
+           lcSpeedGain="0.5" lcKeepRight="0.8"/>
+</routes>
