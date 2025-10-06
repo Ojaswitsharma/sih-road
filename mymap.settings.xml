@@ -1,9 +1,0 @@
-<viewsettings>
-    <scheme name="stable">
-        <vehicles vehicleQuality="2" vehicleSize.minSize="3"
-                  vehicleName.show="1" vehicleName.size="60"
-                  vehicleColorMode="0" vehicleShape.show="1"/>
-        <edges laneEdgeMode="1" laneShowBorders="1"/>
-        <polys polySize.exaggeration="2.0"/>
-    </scheme>
-</viewsettings>

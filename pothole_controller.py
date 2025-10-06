@@ -50,12 +50,8 @@ def load_potholes(obstacles_file, net_file):
             continue
             
         # Get speed multiplier based on type
-        # ALL potholes now cause 90% speed reduction (0.10 = 10% of original speed)
-        speed_mult = {
-            'pothole_pink': 0.10,   # 90% speed reduction
-            'pothole_orange': 0.10, # 90% speed reduction  
-            'pothole_red': 0.10     # 90% speed reduction
-        }.get(poly_type, 0.10)
+        # ALL potholes are now DEEP PURPLE with 99% speed reduction (instant drop to 1% of speed for 5 seconds)
+        speed_mult = 0.01  # Always 99% reduction for all potholes - holds for 5 seconds then recovers
         
         # Get polygon shape (x,y coordinates)
         shape_str = poly.get('shape', '')
@@ -152,7 +148,10 @@ def run_simulation(sumocfg_file, obstacles_file, net_file):
     
     # Track original max speeds for each vehicle
     vehicle_original_speeds = {}
-    vehicle_in_pothole = {}  # Track which pothole a vehicle is in
+    vehicle_pothole_hit_time = {}  # Track when vehicle hit pothole (step number)
+    vehicle_in_pothole_zone = {}  # Track if vehicle is currently in pothole detection zone
+    
+    RECOVERY_TIME = 50  # 5 seconds at 0.1s per step = 50 steps
     
     step = 0
     try:
@@ -173,6 +172,24 @@ def run_simulation(sumocfg_file, obstacles_file, net_file):
                     lane_id = traci.vehicle.getLaneID(veh_id)
                     lane_pos = traci.vehicle.getLanePosition(veh_id)
                     current_speed = traci.vehicle.getSpeed(veh_id)
+                    original_max = vehicle_original_speeds[veh_id]
+                    
+                    # Check if vehicle is recovering from pothole (5-second timer)
+                    if veh_id in vehicle_pothole_hit_time:
+                        steps_since_hit = step - vehicle_pothole_hit_time[veh_id]
+                        
+                        if steps_since_hit < RECOVERY_TIME:
+                            # Still in 5-second recovery period - keep at 1% speed
+                            target_speed = max(0.5, original_max * 0.01)  # 99% reduction
+                            traci.vehicle.setSpeed(veh_id, target_speed)
+                        else:
+                            # 5 seconds passed - allow normal acceleration
+                            traci.vehicle.setSpeed(veh_id, -1)  # Resume normal driving
+                            print(f"Step {step}: Vehicle {veh_id} recovered from pothole, resuming normal speed")
+                            del vehicle_pothole_hit_time[veh_id]
+                            if veh_id in vehicle_in_pothole_zone:
+                                del vehicle_in_pothole_zone[veh_id]
+                        continue
                     
                     # Check if vehicle is on a lane with potholes
                     if lane_id in potholes:
@@ -180,40 +197,33 @@ def run_simulation(sumocfg_file, obstacles_file, net_file):
                         in_any_pothole = False
                         
                         for pothole_pos, speed_mult, ptype in potholes[lane_id]:
-                            # Pothole zone is NOW 10m (±5m from center) - INCREASED for visibility
-                            if abs(lane_pos - pothole_pos) < 5.0:  # Changed from 3.0 to 5.0
+                            # Pothole zone is 10m (±5m from center)
+                            if abs(lane_pos - pothole_pos) < 5.0:
                                 in_any_pothole = True
                                 
-                                # Calculate target speed based on pothole type
-                                original_max = vehicle_original_speeds[veh_id]
-                                target_speed = max(0.5, current_speed * speed_mult)
-                                
-                                # Force immediate speed reduction
-                                traci.vehicle.setSpeed(veh_id, target_speed)
-                                
-                                # Mark vehicle as in pothole
-                                if veh_id not in vehicle_in_pothole:
-                                    print(f"Step {step}: Vehicle {veh_id} hit {ptype} pothole at pos {lane_pos:.1f}, speed {current_speed:.1f} -> {target_speed:.1f} m/s ({int(speed_mult*100)}% of original)")
-                                vehicle_in_pothole[veh_id] = (lane_id, pothole_pos)
+                                # If vehicle just entered pothole zone, trigger instant slowdown
+                                if veh_id not in vehicle_in_pothole_zone:
+                                    # INSTANT 99% speed reduction
+                                    target_speed = max(0.5, original_max * 0.01)
+                                    traci.vehicle.setSpeed(veh_id, target_speed)
+                                    
+                                    # Mark hit time and zone
+                                    vehicle_pothole_hit_time[veh_id] = step
+                                    vehicle_in_pothole_zone[veh_id] = (lane_id, pothole_pos)
+                                    
+                                    print(f"Step {step}: Vehicle {veh_id} hit {ptype} pothole at pos {lane_pos:.1f}, INSTANT drop {current_speed:.1f} -> {target_speed:.1f} m/s (99% reduction, holding 5 seconds)")
                                 break
                         
-                        # If vehicle left pothole zone, restore normal driving
-                        if not in_any_pothole and veh_id in vehicle_in_pothole:
-                            traci.vehicle.setSpeed(veh_id, -1)  # -1 means use normal car-following
-                            print(f"Step {step}: Vehicle {veh_id} exited pothole, resuming normal speed")
-                            del vehicle_in_pothole[veh_id]
-                    
-                    # If vehicle changed lanes and was in pothole, reset speed
-                    elif veh_id in vehicle_in_pothole:
-                        prev_lane, _ = vehicle_in_pothole[veh_id]
-                        if lane_id != prev_lane:
-                            traci.vehicle.setSpeed(veh_id, -1)
-                            del vehicle_in_pothole[veh_id]
+                        # If vehicle left pothole zone without hitting, clear zone marker
+                        if not in_any_pothole and veh_id in vehicle_in_pothole_zone and veh_id not in vehicle_pothole_hit_time:
+                            del vehicle_in_pothole_zone[veh_id]
                 
                 except traci.exceptions.TraCIException as e:
                     # Vehicle might have left simulation
-                    if veh_id in vehicle_in_pothole:
-                        del vehicle_in_pothole[veh_id]
+                    if veh_id in vehicle_in_pothole_zone:
+                        del vehicle_in_pothole_zone[veh_id]
+                    if veh_id in vehicle_pothole_hit_time:
+                        del vehicle_pothole_hit_time[veh_id]
                     if veh_id in vehicle_original_speeds:
                         del vehicle_original_speeds[veh_id]
                     continue

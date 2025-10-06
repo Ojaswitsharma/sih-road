@@ -95,14 +95,12 @@ for edge in edges:
 
 print(f"Found {len(main_roads)} main roads for potholes")
 
-# Pothole types - we'll create visual polygons only, speed reduction via lane area detectors
-        # Pothole types with speed multipliers (how much of original speed remains)
-        # ALL potholes now cause 90% speed reduction (0.10 = 10% of original speed)
-        pothole_types = [
-            ('pothole_pink', 0.10, 'pink'),    # 90% speed reduction
-            ('pothole_orange', 0.10, 'orange'), # 90% speed reduction
-            ('pothole_red', 0.10, 'red')       # 90% speed reduction
-        ]# Open obstacles file for polygons AND lane area detectors
+# All potholes are now DEEP PURPLE with 99% speed reduction (0.01 = 1% of original speed)
+pothole_types = [
+    ('deep_purple', '0.5,0,0.5', 0.01)    # Deep purple with 99% speed reduction
+]
+
+# Open obstacles file for polygons AND lane area detectors
 with open(obstacles_file, "w") as f:
     f.write(f"""<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">\n""")
     
@@ -164,18 +162,15 @@ with open(obstacles_file, "w") as f:
             x, y = map(float, point.split(','))
             
             # Random pothole type with weighted distribution
-            ptype_name, ptype_color, speed_multiplier = random.choices(
-                pothole_types, 
-                weights=[50, 35, 15]  # More pink, fewer red
-            )[0]
+            ptype_name, ptype_color, speed_multiplier = pothole_types[0]  # Always use the first (and only) type - red
             
-            # Create irregular pothole polygon for visualization
-            size = random.uniform(1.0, 2.0)  # Smaller size for more realistic appearance
+            # Create circular pothole polygon for visualization
+            size = random.uniform(0.8, 1.5)  # Small circular potholes (0.8-1.5m diameter)
             points = []
-            for angle_step in range(8):
-                angle = (angle_step * 360 / 8) + random.uniform(-20, 20)
+            for angle_step in range(12):  # 12 points for smoother circle
+                angle = (angle_step * 360 / 12)
                 rad = math.radians(angle)
-                radius = size * random.uniform(0.6, 1.4)
+                radius = size  # Consistent radius for circular shape
                 px = x + radius * math.cos(rad)
                 py = y + radius * math.sin(rad)
                 points.append(f"{px:.2f},{py:.2f}")
