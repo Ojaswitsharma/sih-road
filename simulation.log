@@ -1,0 +1,71 @@
+=== Simulation Log Started at 2025-10-06 06:30:37.890602 ===
+
+[06:30:37] INFO: Starting Indian Road Simulation
+[06:30:39] INFO: AI Mode selected: mixed
+[06:30:40] INFO: Vehicle count: 250 per type = 1000 total
+[06:30:41] INFO: Pothole density: 50-80 per road
+[06:30:41] INFO: Converting OSM to SUMO network...
+[06:30:42] INFO: Network conversion took 1.52s
+[06:30:42] INFO: Generating polygons...
+[06:30:43] INFO: Polygon generation took 0.88s
+[06:30:43] INFO: Parsing network...
+[06:30:43] INFO: Found 9192 edges for potholes, 9192 for routing
+[06:30:43] INFO: Parsing took 0.39s
+[06:30:43] INFO: Creating obstacles...
+[06:30:43] INFO: Created 2 barricades
+[06:30:43] INFO: Generating potholes on 3033 roads (1/3 of network)...
+[06:30:43] INFO:   Progress: 0/3033 edges processed
+[06:30:43] INFO:   Progress: 100/3033 edges processed
+[06:30:43] INFO:   Progress: 200/3033 edges processed
+[06:30:43] INFO:   Progress: 300/3033 edges processed
+[06:30:44] INFO:   Progress: 400/3033 edges processed
+[06:30:44] INFO:   Progress: 500/3033 edges processed
+[06:30:44] INFO:   Progress: 600/3033 edges processed
+[06:30:44] INFO:   Progress: 700/3033 edges processed
+[06:30:44] INFO:   Progress: 800/3033 edges processed
+[06:30:44] INFO:   Progress: 900/3033 edges processed
+[06:30:44] INFO:   Progress: 1000/3033 edges processed
+[06:30:44] INFO:   Progress: 1100/3033 edges processed
+[06:30:44] INFO:   Progress: 1200/3033 edges processed
+[06:30:44] INFO:   Progress: 1300/3033 edges processed
+[06:30:44] INFO:   Progress: 1400/3033 edges processed
+[06:30:44] INFO:   Progress: 1500/3033 edges processed
+[06:30:44] INFO:   Progress: 1600/3033 edges processed
+[06:30:44] INFO:   Progress: 1700/3033 edges processed
+[06:30:44] INFO:   Progress: 1800/3033 edges processed
+[06:30:44] INFO:   Progress: 1900/3033 edges processed
+[06:30:44] INFO:   Progress: 2000/3033 edges processed
+[06:30:44] INFO:   Progress: 2100/3033 edges processed
+[06:30:44] INFO:   Progress: 2200/3033 edges processed
+[06:30:45] INFO:   Progress: 2300/3033 edges processed
+[06:30:45] INFO:   Progress: 2400/3033 edges processed
+[06:30:45] INFO:   Progress: 2500/3033 edges processed
+[06:30:45] INFO:   Progress: 2600/3033 edges processed
+[06:30:45] INFO:   Progress: 2700/3033 edges processed
+[06:30:45] INFO:   Progress: 2800/3033 edges processed
+[06:30:45] INFO:   Progress: 2900/3033 edges processed
+[06:30:45] INFO:   Progress: 3000/3033 edges processed
+[06:30:45] INFO: Created 158903 total potholes:
+[06:30:45] INFO:   Small (50% reduction): 95230
+[06:30:45] INFO:   Medium (75% reduction): 47803
+[06:30:45] INFO:   Large (90% reduction): 15870
+[06:30:45] INFO: Obstacle generation took 1.66s
+[06:30:45] INFO: Generating 1000 vehicles...
+[06:30:45] INFO: Vehicle generation took 0.04s
+[06:30:45] INFO: Adding guaranteed potholes to bus routes...
+[06:30:45] INFO: Found 487 unique bus route edges
+[06:30:45] INFO: Added 428 guaranteed potholes to bus routes
+[06:30:45] INFO: Writing route file...
+[06:30:45] INFO: Route file writing took 0.00s
+[06:30:45] INFO: Computing routes...
+[06:30:46] INFO: Routing took 0.78s
+[06:30:46] INFO: Creating SUMO configuration...
+[06:30:46] INFO: Creating visualization settings...
+[06:30:46] INFO: Simulation setup complete
+[06:30:46] INFO: AI Mode: mixed
+[06:30:46] INFO: Total vehicles: 1000
+[06:30:46] INFO: Total potholes: 159331
+[06:30:46] INFO: Regular potholes: 158903
+[06:30:46] INFO: Bus route potholes: 428
+[06:30:46] INFO: Barricades: 2
+[06:30:46] INFO: Launching SUMO GUI

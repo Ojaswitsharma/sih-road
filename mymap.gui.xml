@@ -1,0 +1,22 @@
+<viewsettings>
+    <scheme name="indian_roads">
+        <background backgroundColor="0.85,0.9,0.85" showGrid="0"/>
+        <edges laneEdgeMode="1" scaleMode="0" laneShowBorders="1" 
+               edgeName.show="0" streetName.show="1" edgeData.show="0"
+               edgeColorMode="0" edgeWidthMode="0"/>
+        <vehicles vehicleQuality="3" vehicleSize.minSize="2.5" vehicleSize.exaggeration="2.0"
+                 vehicleName.show="1" vehicleName.size="60" vehicleName.color="0,0,0"
+                 vehicleColorMode="0" vehicleShape.show="1"
+                 vehicleText.show="1" vehicleText.size="50" vehicleText.color="255,0,0"
+                 showBlinker="1" drawMinGap="1" showBTRange="0"
+                 showRouteIndex="0" scaleLength="1" drawLaneChangePreference="1"/>
+        <persons personQuality="2" personSize.minSize="1" personSize.exaggeration="1"/>
+        <junctions junctionMode="1" drawLinkTLIndex="0" drawLinkJunctionIndex="0"
+                   junctionName.show="0" internalJunctionName.show="0" tlsPhaseIndex.show="1"/>
+        <additionals addMode="0" addSize.exaggeration="2.5" addName.show="1" addFullName.show="1"/>
+        <pois poiSize.minSize="1" poiSize.exaggeration="2" poiName.show="0"/>
+        <polys polySize.minSize="2" polySize.exaggeration="2.5" polyName.show="1"/>
+        <legend showSizeLegend="1"/>
+        <opengl antialiase="1" dither="1"/>
+    </scheme>
+</viewsettings>

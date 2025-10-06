@@ -117,16 +117,17 @@ with open(obstacles_file, "w") as f:
     for edge in pothole_edges:
         lanes = edge.findall('lane')
         if lanes:
+            # Get all lane IDs for this edge to apply speed reduction to ALL lanes
+            all_lane_ids = [lane.get('id') for lane in lanes]
             lane = lanes[0]
-            lane_id = lane.get('id')
             length = float(lane.get('length', '50'))
             shape = lane.get('shape')
             
             if shape and length > 20:
                 coords = shape.split()
                 
-                # 8-12 potholes per road at random positions (Indian road reality)
-                num_potholes = random.randint(8, 12)
+                # 15-25 potholes per road at random positions (Indian road reality - MORE POTHOLES!)
+                num_potholes = random.randint(15, 25)
                 positions = [random.uniform(0.1, 0.9) for _ in range(num_potholes)]
                 
                 for pos_ratio in positions:
@@ -145,27 +146,33 @@ with open(obstacles_file, "w") as f:
                         else:
                             size = random.uniform(2.5, 5.0)  # Large potholes (rare)
                         
+                        # Add lateral offset to spread potholes across lanes
+                        lateral_offset = random.uniform(-2, 2)
+                        
                         color = "0.2,0.2,0.2"  # Dark gray
                         
-                        # Create irregular erratic pothole shape
+                        # Create irregular erratic pothole shape with lateral spread
                         points = []
                         num_points = 8
                         for angle_step in range(num_points):
                             angle = (angle_step * 360 / num_points) + random.uniform(-15, 15)
                             rad = math.radians(angle)
                             radius = size * random.uniform(0.8, 1.2)
-                            px = x + radius * math.cos(rad)
+                            px = x + radius * math.cos(rad) + lateral_offset
                             py = y + radius * math.sin(rad)
                             points.append(f"{px:.2f},{py:.2f}")
                         poly_shape = " ".join(points)
                         
                         f.write(f"""    <poly id="pothole_{pothole_count}" type="pothole" color="{color}" fill="1" layer="10" shape="{poly_shape}"/>\n""")
                         
-                        # Add speed reduction
+                        # Add speed reduction to ALL lanes on this edge
                         pos = length * pos_ratio
                         speed_limit = float(lane.get('speed', '13.89'))
-                        reduced_speed = speed_limit * 0.4
-                        f.write(f"""    <variableSpeedSign id="pothole_speed_{pothole_count}" lanes="{lane_id}" pos="{pos:.2f}">
+                        reduced_speed = speed_limit * 0.3  # More severe reduction (30% of original)
+                        
+                        # Apply to all lanes
+                        lanes_str = " ".join(all_lane_ids)
+                        f.write(f"""    <variableSpeedSign id="pothole_speed_{pothole_count}" lanes="{lanes_str}" pos="{pos:.2f}">
         <step time="0" speed="{reduced_speed:.2f}"/>
     </variableSpeedSign>\n""")
                         
@@ -218,8 +225,8 @@ with open(obstacles_file, "w") as f:
     f.write(f"""</additional>""")
 
 
-# --- 2.7. Create enhanced view settings ---
-print("Creating enhanced visualization settings...")
+# --- 2.7. Create enhanced view settings with comprehensive vehicle stats ---
+print("Creating enhanced visualization settings with vehicle stats...")
 view_file = "mymap.view.xml"
 with open(view_file, "w") as f:
     f.write("""<viewsettings>
@@ -228,37 +235,116 @@ with open(view_file, "w") as f:
         <edges laneEdgeMode="1" scaleMode="0" laneShowBorders="1" 
                edgeName.show="0" streetName.show="1" edgeData.show="0"
                edgeColorMode="0" edgeWidthMode="0"/>
-        <vehicles vehicleQuality="3" vehicleSize.minSize="1" vehicleSize.exaggeration="2.0"
-                 vehicleName.show="1" vehicleColorMode="0" vehicleShape.show="1"
-                 vehicleText.show="1" vehicleText.param="speed" vehicleText.size="50"/>
+        <vehicles vehicleQuality="3" vehicleSize.minSize="2" vehicleSize.exaggeration="3.0"
+                 vehicleName.show="1" vehicleName.size="80" vehicleName.color="0,0,0"
+                 vehicleColorMode="0" vehicleShape.show="1"
+                 vehicleText.show="1" vehicleText.size="70" vehicleText.color="255,0,0"
+                 showBlinker="1" drawMinGap="1" showBTRange="0"
+                 showRouteIndex="0" scaleLength="1" drawLaneChangePreference="1"/>
         <persons personQuality="2" personSize.minSize="1" personSize.exaggeration="1"/>
         <junctions junctionMode="1" drawLinkTLIndex="0" drawLinkJunctionIndex="0"
-                   junctionName.show="0" internalJunctionName.show="0" tlsPhaseIndex.show="0"/>
+                   junctionName.show="0" internalJunctionName.show="0" tlsPhaseIndex.show="1"/>
         <additionals addMode="0" addSize.exaggeration="3" addName.show="1" addFullName.show="1"/>
         <pois poiSize.minSize="1" poiSize.exaggeration="2" poiName.show="0"/>
         <polys polySize.minSize="2" polySize.exaggeration="3" polyName.show="1"/>
-        <legend showSizeLegend="0"/>
+        <legend showSizeLegend="1"/>
         <opengl antialiase="1" dither="1"/>
     </scheme>
 </viewsettings>""")
 
 
 
-# --- 3. Generate random trips ---
-print("Generating trips with improved routing...")
-subprocess.run([
-    "python3", os.path.join(SUMO_HOME, "tools/randomTrips.py"),
-    "-n", net_file,
-    "-o", trips_file,
-    "-e", "3600",  # 1 hour simulation
-    "-p", "2",     # new vehicle every 2 sec on average
-    "-l",          # allow loops
-    "--min-distance", "300",  # Minimum trip distance to avoid U-turns
-    "--max-distance", "3000",  # Maximum trip distance for realism
-    "--fringe-factor", "10",  # More traffic from edges
-    "--allow-fringe",  # Allow fringe nodes
-    "--validate"  # Validate trips
-])
+# --- 3. Generate specific number of trips (25-30 per vehicle type = 100-120 total) ---
+print("Generating trips with vehicle types...")
+
+# First, get list of valid edge IDs from network for passenger vehicles
+tree = ET.parse(net_file)
+root = tree.getroot()
+
+# Get edges that allow passenger vehicles (not pedestrian-only, not railways, etc.)
+suitable_trip_edges = []
+for edge in root.findall('.//edge'):
+    edge_id = edge.get('id')
+    # Skip internal edges, pedestrian edges, and special edges
+    if edge_id and not edge_id.startswith(':'):
+        lanes = edge.findall('lane')
+        if lanes:
+            # Check if any lane allows passenger vehicles
+            for lane in lanes:
+                allow = lane.get('allow', '')
+                disallow = lane.get('disallow', '')
+                # Good edges allow passenger or don't disallow all vehicles
+                if 'passenger' in allow or (not disallow or 'passenger' not in disallow):
+                    suitable_trip_edges.append(edge_id)
+                    break
+
+# Ensure we have enough edges
+if len(suitable_trip_edges) < 20:
+    # Fallback: use any non-internal edge
+    suitable_trip_edges = [e.get('id') for e in root.findall('.//edge') if not e.get('id').startswith(':')]
+
+print(f"Found {len(suitable_trip_edges)} suitable edges for trips")
+
+# Create trips with embedded vehicle type definitions
+with open(trips_file, "w") as f:
+    f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    f.write('<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">\n')
+    
+    # Add vehicle type definitions directly in route file
+    f.write("""
+    <!-- Auto-rickshaw: Small, slow, highly maneuverable -->
+    <vType id="auto_rickshaw" accel="1.5" decel="4.0" sigma="0.8" length="3.0" minGap="1.0" 
+           maxSpeed="13.89" color="1,1,0" vClass="passenger" guiShape="delivery" 
+           speedFactor="0.9" speedDev="0.2" lcStrategic="1.5" lcCooperative="0.5"
+           lcSpeedGain="2.0" lcKeepRight="0.3"/>
+    
+    <!-- Motorcycle/Scooter: Fast, agile, weaves through traffic -->
+    <vType id="motorcycle" accel="3.5" decel="6.0" sigma="0.6" length="2.0" minGap="0.5" 
+           maxSpeed="27.78" color="1,0,0" vClass="motorcycle" guiShape="motorcycle"
+           speedFactor="1.2" speedDev="0.3" lcStrategic="2.0" lcCooperative="0.3"
+           lcSpeedGain="3.0" lcKeepRight="0.1"/>
+    
+    <!-- Car: Medium speed, standard behavior -->
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5.0" minGap="2.5" 
+           maxSpeed="33.33" color="0.9,0.9,0.9" vClass="passenger" guiShape="passenger"
+           speedFactor="1.0" speedDev="0.15" lcStrategic="1.0" lcCooperative="1.0"
+           lcSpeedGain="1.0" lcKeepRight="0.5"/>
+    
+    <!-- Bus/Truck: Large, slow, less maneuverable -->
+    <vType id="bus_truck" accel="1.2" decel="3.5" sigma="0.3" length="12.0" minGap="3.5" 
+           maxSpeed="22.22" color="0,0,1" vClass="bus" guiShape="bus"
+           speedFactor="0.85" speedDev="0.1" lcStrategic="0.5" lcCooperative="1.5"
+           lcSpeedGain="0.5" lcKeepRight="0.8"/>
+    
+""")
+    
+    vehicle_id = 0
+    vehicle_types = [
+        ("auto_rickshaw", 30),
+        ("motorcycle", 30),
+        ("car", 30),
+        ("bus_truck", 30)
+    ]
+    
+    for vtype, count in vehicle_types:
+        for i in range(count):
+            # Ensure minimum distance between start and end
+            attempts = 0
+            while attempts < 10:
+                from_edge = random.choice(suitable_trip_edges)
+                to_edge = random.choice(suitable_trip_edges)
+                # Ensure different start and end
+                if to_edge != from_edge:
+                    break
+                attempts += 1
+            
+            depart_time = vehicle_id * 10  # Stagger departures by 10 seconds
+            f.write(f'    <trip id="{vtype}_{i}" type="{vtype}" depart="{depart_time}" from="{from_edge}" to="{to_edge}" departLane="best" departSpeed="max"/>\n')
+            vehicle_id += 1
+    
+    f.write('</routes>\n')
+
+print(f"Created 120 trips (30 of each type)")
 
 # --- 4. Convert trips to routes ---
 print("Converting trips to routes with better routing algorithm...")
@@ -267,7 +353,6 @@ subprocess.run([
     "-n", net_file,
     "-t", trips_file,
     "-o", rou_file,
-    "--additional-files", vtypes_file,  # Include vehicle types
     "--ignore-errors",  # Continue on errors
     "--repair",  # Repair broken routes
     "--remove-loops",  # Remove route loops
@@ -275,30 +360,14 @@ subprocess.run([
     "--weights.random-factor", "1.5"  # Add route variation
 ])
 
-# --- 4.5. Modify routes to assign different vehicle types ---
-print("Assigning vehicle types to routes...")
-tree = ET.parse(rou_file)
-root = tree.getroot()
-
-# Vehicle type distribution (Indian traffic mix)
-# 40% motorcycles, 30% cars, 20% auto-rickshaws, 10% buses/trucks
-vehicle_types = ["motorcycle"] * 40 + ["car"] * 30 + ["auto_rickshaw"] * 20 + ["bus_truck"] * 10
-
-for vehicle in root.findall('vehicle'):
-    vtype = random.choice(vehicle_types)
-    vehicle.set('type', vtype)
-
-# Write modified routes
-tree.write(rou_file, encoding='UTF-8', xml_declaration=True)
-
-# --- 5. Generate SUMO configuration ---
-print("Writing SUMO config with enhanced visualization...")
+# --- 5. Generate SUMO configuration with vehicle stats output ---
+print("Writing SUMO config with enhanced visualization and stats...")
 with open(sumocfg_file, "w") as f:
     f.write(f"""<configuration>
     <input>
         <net-file value="{net_file}"/>
         <route-files value="{rou_file}"/>
-        <additional-files value="{poly_file},{vtypes_file},{obstacles_file}"/>
+        <additional-files value="{poly_file},{obstacles_file}"/>
     </input>
     <time>
         <begin value="0"/>
@@ -306,8 +375,8 @@ with open(sumocfg_file, "w") as f:
         <step-length value="0.1"/>
     </time>
     <processing>
-        <collision.action value="none"/>
-        <collision.mingap-factor value="0"/>
+        <collision.action value="warn"/>
+        <collision.mingap-factor value="0.1"/>
         <time-to-teleport value="-1"/>
         <max-depart-delay value="900"/>
         <ignore-route-errors value="true"/>
@@ -317,11 +386,16 @@ with open(sumocfg_file, "w") as f:
         <device.rerouting.period value="300"/>
         <device.rerouting.adaptation-steps value="180"/>
     </routing>
+    <report>
+        <verbose value="true"/>
+        <duration-log.statistics value="true"/>
+    </report>
     <gui_only>
-        <gui-settings-file value="mymap.view.xml"/>
+        <gui-settings-file value="mymap.gui.xml"/>
         <start value="true"/>
         <quit-on-end value="false"/>
         <game value="false"/>
+        <tracker-interval value="1"/>
     </gui_only>
 </configuration>""")
 
