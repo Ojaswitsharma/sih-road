@@ -50,11 +50,12 @@ def load_potholes(obstacles_file, net_file):
             continue
             
         # Get speed multiplier based on type
+        # ALL potholes now cause 90% speed reduction (0.10 = 10% of original speed)
         speed_mult = {
-            'pothole_pink': 0.50,   # 50% speed reduction
-            'pothole_orange': 0.25, # 75% speed reduction  
+            'pothole_pink': 0.10,   # 90% speed reduction
+            'pothole_orange': 0.10, # 90% speed reduction  
             'pothole_red': 0.10     # 90% speed reduction
-        }.get(poly_type, 0.5)
+        }.get(poly_type, 0.10)
         
         # Get polygon shape (x,y coordinates)
         shape_str = poly.get('shape', '')
