@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-10-07 04:36:28 by Eclipse SUMO duarouter Version 1.24.0
+<duarouterConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="mymap.net.xml"/>
+        <route-files value="mymap.trips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="mymap.rou.xml"/>
+    </output>
+
+    <processing>
+        <remove-loops value="true"/>
+        <repair value="true"/>
+    </processing>
+
+    <report>
+        <no-warnings value="true"/>
+        <ignore-errors value="true"/>
+    </report>
+
+</duarouterConfiguration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="auto" length="3.00" minGap="1.20" maxSpeed="13.89" vClass="passenger" guiShape="delivery" color="yellow" accel="1.8" decel="4.5" sigma="0.7"/>
+    <vehicle id="auto_0" type="auto" depart="0.00" departLane="best" departSpeed="max">
+        <routeDistribution last="0">
+            <route cost="194.66" probability="1.00000000" edges="-1053851211#11 -1053851211#10 -1053851211#8 -1053851211#7 -1053851211#6 -1053851211#5 -1053851211#4 -1053851211#3 -1053851211#2 -1053851211#1 -1053851211#0 1327208478 1053851214#0 1053851214#1 722082929 24577097#0 24577097#1 24577097#2 24577097#3 24577097#4 24577097#5 447141133#0 447141133#1 722082944 447141132#0 447141132#1 447141132#2 447141132#3 447141132#4 596373329 562340239 998790359 998790356#0 998790356#1 998790356#2 998790356#3 998790356#4 998790356#5 998790356#6 998790356#7 998790356#8 998790355#1 998790354#0 998790354#1 998790354#2 998790354#3 998790354#4 998790354#5 998790354#7 998790352#0 998790352#1 998790352#3 998790352#4 998790358#0 998790358#1 998790358#2 998790358#3 998790358#4 998790358#5 998790358#6 998790358#7 998790358#9 998790358#10 998790358#11 998790358#12 998790358#14 998790358#15 998790358#16 998790358#17 998790358#18 998790358#19 998790351#0 998790351#1 998790351#2 447141131#0 447141131#1 447141131#2 446922589 24583333#0 24583333#1 24583333#2 24583333#3 24583333#4 24583333#5 24583333#6 446922584#0 446922584#1 446922586#0 446922586#1 570859666#0 570859666#1 656933875 656933877#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="motorbike" length="2.00" minGap="0.50" maxSpeed="27.78" vClass="passenger" guiShape="motorcycle" color="red" accel="3.5" decel="6.0" sigma="0.6"/>
+    <vehicle id="motorbike_0" type="motorbike" depart="0.00" departLane="best" departSpeed="max">
+        <routeDistribution last="0">
+            <route cost="127.69" probability="1.00000000" edges="1187268473#2-AddedOffRampEdge 1187268473#3 1057067136#0 1057067136#1 -1075090207 24577372#1 24577372#2 24577372#3 24577372#4 24577372#5 680551212#3 680551212#4 582461172#0 582461172#3 680551211 680551207 23134098#0 23134098#1 23134098#1-AddedOffRampEdge 23134098#3 23134098#4 23134098#5 23134098#6 23134098#7 23134098#8 656933873 656933872#0 656933872#1 582461171#0 582461171#2 581989173#0 562202340#0 562202340#1 562202340#2 562202340#3 562202340#4 562202340#4-AddedOffRampEdge 562202340#5 562202340#6 562202340#6-AddedOffRampEdge"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="car" length="5.00" minGap="2.50" maxSpeed="33.33" vClass="passenger" guiShape="passenger" color="0,230,230" accel="2.6" decel="4.5" sigma="0.5"/>
+    <vehicle id="car_0" type="car" depart="0.00" departLane="best" departSpeed="max">
+        <routeDistribution last="0">
+            <route cost="131.34" probability="1.00000000" edges="995113417#5 995113417#6 995113417#7 995113417#8 23134630#1 23134630#2 23134630#3 446922582#0 446922582#1 446922582#3 446922582#7 446922582#8 446922582#9 446922582#10 446922582#11 446922582#12 581989173#0 581989173#1 581989173#2 581989173#3 581989173#4 581989173#5 581989173#6 680551206#0 680551206#2 680551212#0 680551212#1 680551212#2 680551212#3 680551212#4 582461172#0 582461172#3 680551211 24563435#0"/>
+        </routeDistribution>
+    </vehicle>
+</routes>

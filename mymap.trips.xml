@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+
+    <vType id="auto" accel="1.8" decel="4.5" sigma="0.7" length="3.0" minGap="1.2" 
+           maxSpeed="13.89" color="1,1,0" vClass="passenger" guiShape="delivery"/>
+    <vType id="motorbike" accel="3.5" decel="6.0" sigma="0.6" length="2.0" minGap="0.5" 
+           maxSpeed="27.78" color="1,0,0" vClass="passenger" guiShape="motorcycle"/>
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5.0" minGap="2.5" 
+           maxSpeed="33.33" color="0,0.9,0.9" vClass="passenger" guiShape="passenger"/>
+    <vType id="bus" accel="1.2" decel="3.5" sigma="0.3" length="12.0" minGap="3.5" 
+           maxSpeed="22.22" color="0,0,1" vClass="passenger" guiShape="bus"/>
+    <trip id="auto_0" type="auto" depart="0.0" from="-1053851211#11" to="656933877#0" departLane="best" departSpeed="max"/>
+    <trip id="motorbike_0" type="motorbike" depart="0.0" from="1187268473#2-AddedOffRampEdge" to="562202340#6-AddedOffRampEdge" departLane="best" departSpeed="max"/>
+    <trip id="car_0" type="car" depart="0.0" from="995113417#5" to="24563435#0" departLane="best" departSpeed="max"/>
+    <trip id="bus_0" type="bus" depart="0.0" from="24537423#2" to="24577367#0" departLane="best" departSpeed="max"/>
+</routes>

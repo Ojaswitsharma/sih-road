@@ -1,25 +1,17 @@
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
-    <!-- Auto-rickshaw: overtakes, medium distance, medium speed -->
     <vType id="auto" accel="1.8" decel="4.5" sigma="0.7" length="3.0" minGap="1.2" 
            maxSpeed="13.89" color="1,1,0" vClass="passenger" guiShape="delivery" 
-           speedFactor="0.95" speedDev="0.25" lcStrategic="2.0" lcCooperative="0.4"
-           lcSpeedGain="2.5" lcKeepRight="0.2" lcAssertive="1.5"/>
+           speedFactor="0.95" speedDev="0.25"/>
     
-    <!-- Motorbike: erratic speed, frequent lane changes, short distance, fast -->
     <vType id="motorbike" accel="4.0" decel="7.0" sigma="0.8" length="2.0" minGap="0.5" 
            maxSpeed="27.78" color="1,0,0" vClass="passenger" guiShape="motorcycle"
-           speedFactor="1.3" speedDev="0.4" lcStrategic="3.0" lcCooperative="0.2"
-           lcSpeedGain="4.0" lcKeepRight="0.1" lcAssertive="2.0" impatience="1.0"/>
+           speedFactor="1.3" speedDev="0.4"/>
     
-    <!-- Car: average behavior, long distance -->
     <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5.0" minGap="2.5" 
            maxSpeed="33.33" color="0.9,0.9,0.9" vClass="passenger" guiShape="passenger"
-           speedFactor="1.05" speedDev="0.2" lcStrategic="1.0" lcCooperative="1.0"
-           lcSpeedGain="1.0" lcKeepRight="0.5" lcAssertive="1.0"/>
+           speedFactor="1.05" speedDev="0.2"/>
     
-    <!-- Bus: slow, long distance, less maneuverable -->
     <vType id="bus" accel="1.2" decel="3.5" sigma="0.3" length="12.0" minGap="3.5" 
            maxSpeed="22.22" color="0,0,1" vClass="passenger" guiShape="bus"
-           speedFactor="0.9" speedDev="0.1" lcStrategic="0.5" lcCooperative="1.5"
-           lcSpeedGain="0.5" lcKeepRight="0.8" lcAssertive="0.5"/>
+           speedFactor="0.9" speedDev="0.1"/>
 </routes>

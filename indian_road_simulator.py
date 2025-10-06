@@ -28,10 +28,15 @@ print("Converting OSM to SUMO network...")
 subprocess.run([
     "netconvert",
     "--osm-files", osm_file,
-    "--type-files", os.path.join(SUMO_HOME, "data/typemap/osmNetconvert.typ.xml"),
+    # REMOVED: --type-files to avoid OSM lane number overrides
     "--output-file", net_file,
     "--geometry.remove", "--ramps.guess", "--junctions.join",
-    "--tls.guess-signals", "--tls.discard-simple", "--tls.join", "--tls.default-type", "actuated", "-v"
+    "--tls.guess-signals", "--tls.discard-simple", "--tls.join", "--tls.default-type", "actuated",
+    "--default.lanewidth", "3.5",  # Set lane width
+    "--default.lanenumber", "2",   # Force 2 lanes per direction for multi-lane capability
+    "--default.speed", "13.89",    # Default speed 50 km/h
+    "--osm.oneway", "false",  # Treat all roads as bidirectional
+    "-v"
 ])
 
 # --- 2. Generate polygons (optional) ---
@@ -402,17 +407,17 @@ with open(sumocfg_file, "w") as f:
     </gui_only>
 </configuration>""")
 
-print("\n" + "="*60)
-print("SIMULATION SETUP COMPLETE")
-print("="*60)
-print(f"Total vehicles: 120 (30 of each type)")
-print(f"Simulation time: {SIMULATION_TIME} seconds ({SIMULATION_TIME/60:.1f} minutes)")
-print(f"Vehicle types: auto, motorbike, car, bus (30 each)")
-print(f"Potholes: On main roads (pink=50%, orange=75%, red=90% INSTANT speed reduction)")
-print("="*60)
-print("\nStarting SUMO with pothole speed controller...")
-print("NOTE: Vehicles will slow down INSTANTLY when touching potholes!")
-print("="*60)
+    print("\n" + "="*60)
+    print("SIMULATION SETUP COMPLETE")
+    print("="*60)
+    print(f"Total vehicles: 120 (30 of each type)")
+    print(f"Simulation time: {SIMULATION_TIME} seconds ({SIMULATION_TIME/60:.1f} minutes)")
+    print(f"Vehicle types: auto, motorbike, car, bus (30 each)")
+    print(f"Potholes: On main roads (pink=50%, orange=75%, red=90% INSTANT speed reduction)")
+    print("="*60)
+    print("\nStarting SUMO with pothole swerve controller...")
+    print("NOTE: Vehicles will swerve laterally to avoid potholes!")
+    print("="*60)
 
-# --- 7. Run SUMO with TraCI pothole controller ---
-subprocess.run(["python3", "pothole_controller.py"])
+    # --- 7. Run SUMO with TraCI pothole swerve controller ---
+    subprocess.run(["python3", "pothole_swerve_controller.py", "--config", "mymap.sumocfg"])

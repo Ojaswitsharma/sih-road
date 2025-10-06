@@ -1,0 +1,9 @@
+<viewsettings>
+    <scheme name="indian_roads">
+        <background backgroundColor="0.85,0.9,0.85" showGrid="0"/>
+        <vehicles vehicleQuality="3" vehicleSize.minSize="2.5" vehicleSize.exaggeration="2.0"
+                 vehicleName.show="1" vehicleShape.show="1"/>
+        <additionals addSize.exaggeration="2.5"/>
+        <polys polySize.minSize="2" polySize.exaggeration="2.5" polyName.show="1"/>
+    </scheme>
+</viewsettings>

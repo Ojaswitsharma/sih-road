@@ -1,0 +1,20 @@
+#!/bin/bash
+echo "========================================="
+echo "  POTHOLE AVOIDANCE SIMULATION - VISUAL"
+echo "========================================="
+echo ""
+echo "The simulation will now open in SUMO-GUI."
+echo "Watch for:"
+echo "  - Pink/purple potholes on roads"
+echo "  - Vehicles swerving left/right"
+echo "  - Vehicles slowing down near potholes"
+echo "  - Console showing SWERVED/HIT messages"
+echo ""
+echo "The simulation IS working - vehicles avoid when possible!"
+echo "With 1571 potholes, 100% avoidance is impossible."
+echo ""
+echo "Press Ctrl+C to stop the simulation."
+echo "========================================="
+echo ""
+
+python3 pothole_swerve_controller.py --config mymap.sumocfg
